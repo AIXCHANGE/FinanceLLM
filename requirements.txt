@@ -1,0 +1,10 @@
+streamlit
+langchain
+openai
+chromadb
+tiktoken
+pandas
+numpy
+streamlit-chat
+beautifulsoup4
+tabulate
