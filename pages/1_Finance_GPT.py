@@ -80,6 +80,18 @@ if 'df_bitcoin' not in st.session_state:
 if 'df_user' not in st.session_state:
     st.session_state['df_user'] = []
 
+if 'api' not in st.session_state:
+    st.session_state['api'] = ''
+
+if 'btc_add' not in st.session_state:
+    st.session_state['btc_add'] = ''
+
+if 'from_time' not in st.session_state:
+    st.session_state['from_time'] = ''
+
+if 'to_time' not in st.session_state:
+    st.session_state['to_time'] = ''
+
 
 
 
@@ -90,18 +102,28 @@ st.set_page_config(page_title="HarmonyAI", page_icon="chart_with_upwards_trend")
 st.markdown("<h1 style='text-align: center;'> Finance GPT</h1>", unsafe_allow_html=True)
 st.markdown("<h3 style='text-align: center;'> Powered by HarmonyAI</h3>", unsafe_allow_html=True)
 
+st.divider()
+st.divider()
 
-api_key=st.text_input(label="Enter your openai api key",placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-openai.api_key=str(api_key)
-bitcoin_address=st.text_input(label="Enter your Bitcoin Address",placeholder="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh")
-start_date = st.date_input('Enter start date', value=datetime.datetime(2019,7,6))
-start_time = st.time_input('Enter start time', datetime.time(8, 45,30))
-from_time=datetime.datetime.combine(start_date, start_time)
-to_time=datetime.datetime.now()
 
-from_unix=time.mktime(from_time.timetuple())
-to_unix=time.mktime(to_time.timetuple())
-os.environ["OPENAI_API_KEY"]=openai.api_key
+col3,col4=st.columns(2)
+with col3:
+    api_key=st.text_input(label="Enter your OPENAI api key",placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    st.session_state['api']=str(api_key)
+with col4:
+    st.session_state['btc_add'] =st.text_input(label="Enter your Bitcoin Address",placeholder="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh")
+col1, col2 = st.columns(2)
+with col1:
+    start_date = st.date_input('Bitcoin Tracking Date', value=datetime.datetime(2019,7,6))
+with col2:
+    start_time = st.time_input('Bitcoin Tracking Time', datetime.time(8, 45,30))
+
+st.session_state['from_time']=datetime.datetime.combine(start_date, start_time)
+st.session_state['to_time']=datetime.datetime.now()
+
+from_unix=time.mktime(st.session_state['from_time'].timetuple())
+to_unix=time.mktime(st.session_state['to_time'].timetuple())
+os.environ["OPENAI_API_KEY"]=st.session_state['api']
 
 st.session_state['data']=st.radio(
         "Which Dataframe would you like to ask questions to?",
@@ -109,17 +131,17 @@ st.session_state['data']=st.radio(
     )
 
 if st.button('Update data'):
-    df_bitcoin,df_user= make_data(from_unix,to_unix,bitcoin_address)
+    df_bitcoin,df_user= make_data(from_unix,to_unix,st.session_state['btc_add'])
     st.session_state['df_bitcoin'] = df_bitcoin
     st.session_state['df_user'] = df_user
 
-
+st.divider()
 
 # Sidebar - let user choose model, show total cost of current conversation, and let user clear the current conversation
 st.sidebar.title("Welcome")
 sub_page_name = st.sidebar.radio("Contents", ("Chatbot", "Know your data"))
 counter_placeholder = st.sidebar.empty()
-counter_placeholder.write("See how the dataframe looks to ask questions better")
+counter_placeholder.write("Tips : See how the dataframe looks to ask questions better")
 clear_button = st.sidebar.button("Clear Conversation", key="clear")
 
 
@@ -129,9 +151,6 @@ if clear_button:
     st.session_state['messages'] = [
         {"role": "system", "content": "You are a helpful assistant."}
     ]
-
-
-
 
 
 if(sub_page_name=="Chatbot"):
