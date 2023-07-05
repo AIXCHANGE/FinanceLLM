@@ -105,13 +105,13 @@ st.markdown("<h3 style='text-align: center;'> Powered by HarmonyAI</h3>", unsafe
 st.divider()
 st.divider()
 
-
-col3,col4=st.columns(2)
-with col3:
-    api_key=st.text_input(label="Enter your OPENAI api key",placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-    st.session_state['api']=str(api_key)
-with col4:
-    st.session_state['btc_add'] =st.text_input(label="Enter your Bitcoin Address",placeholder="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh")
+st.session_state['api'] = st.secrets["API_KEY"]
+#col3,col4=st.columns(2)
+# with col3:
+#     api_key=st.text_input(label="Enter your OPENAI api key",placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+#     st.session_state['api']=str(api_key)
+# with col4:
+st.session_state['btc_add'] = st.text_input(label="Enter your Bitcoin Address",placeholder="bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh")
 col1, col2 = st.columns(2)
 with col1:
     start_date = st.date_input('Bitcoin Tracking Date', value=datetime.datetime(2019,7,6))
